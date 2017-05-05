@@ -1,7 +1,1 @@
-os:
-  - linux
-jdk:
-  - openjdk6
-before_install:
-  - jdk_switcher use openjdk6
-  - java -version
+language: java
