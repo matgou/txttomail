@@ -1,0 +1,26 @@
+TO: matgou@kapable.info
+TYPE:DEBUG
+APPCOD:TxtToMail
+SUBJECT:Mail d'example
+PJ:src/main/resources/tab1.csv
+TEXT:Bonjour,
+TEXT:
+TEXT:Ceci est un email généré par le programme TxtToMail
+TEXT:
+TEXT: Test d'insersion d'un tableau :
+ARRAY: src/main/resources/tab1.csv
+TEXT:
+TEXT: Test d'insersion de données brutes
+COUCOU
+RAW:   - fichier fic1.csv : 17820 lignes traitees
+RAW:   - fichier fic2.csv : 27965 lignes traitees
+RAW:   - fichier fic3.csv : 2037 lignes traitees
+RAW:
+TEXT:Test d'insersion d'URLs
+TEXT:
+TEXT: Plus d'info sur http://www.google.fr http://localhost.localdomain
+TEXT: 
+TEXT:Lien vers file cifs :
+TEXT:
+TEXT:\\srv.localdomain\SHARE$\REP1\REP2\REP3
+IMAGE: logo.png

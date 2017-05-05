@@ -1,0 +1,7 @@
+os:
+  - linux
+jdk:
+  - oraclejdk6
+before_install:
+  - jdk_switcher use oraclejdk6
+  - java -version
