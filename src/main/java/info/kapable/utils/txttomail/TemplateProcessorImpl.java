@@ -12,14 +12,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Properties;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This implementation of TemplateProcessor load input file and config<br>
@@ -29,6 +33,8 @@ import org.apache.log4j.PropertyConfigurator;
  *
  */
 public class TemplateProcessorImpl implements TemplateProcessor {
+	private static final Logger logger = LoggerFactory.getLogger(TemplateProcessorImpl.class);
+
 	/**
 	 * Input Stream from inputFile
 	 */
@@ -36,7 +42,7 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	/**
 	 * Writer to output
 	 */
-	private Writer output;
+	private OutputStream output;
 
 	/**
 	 * Interface to send email
@@ -78,8 +84,7 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 
 			// Create an output writer
 			if (outputFilePath != null) {
-				this.output = new BufferedWriter(new OutputStreamWriter(
-						new FileOutputStream(outputFilePath)));
+				this.output = new FileOutputStream(outputFilePath);
 			}
 
 			// Push config to Email singleton
@@ -109,7 +114,7 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 		PropertyConfigurator.configure(props); 
 	}
 
-	public void process() throws TemplateProcessingException {
+	public void process() throws TemplateProcessingException, IOException, MessagingException {
 		Email email = new Email();
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(this.input));
@@ -126,6 +131,10 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 		}
 		// Send email
 		this.message = emailSender.send(email);
+		if(output != null ) {
+			this.getMessage().writeTo(this.output);
+			logger.info("E-mail file written to output");
+		}
 	}
 
 	public MimeMessage getMessage() {

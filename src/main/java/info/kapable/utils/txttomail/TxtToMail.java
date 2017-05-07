@@ -2,6 +2,9 @@ package info.kapable.utils.txttomail;
 
 import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 
+import java.io.IOException;
+
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.cli.CommandLine;
@@ -9,6 +12,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class of application <br>
@@ -24,6 +29,8 @@ import org.apache.commons.cli.ParseException;
  *
  */
 public class TxtToMail {
+	private static final Logger logger = LoggerFactory.getLogger(TxtToMail.class);
+
 	/**
 	 * Set true when in testUnit context
 	 */
@@ -87,6 +94,14 @@ public class TxtToMail {
 			System.exit(1);
 		} catch (TemplateProcessingException e) {
 			// If TemplateProcessor throw and Exception exit != 1
+			System.exit(1);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while write output", e);
+			System.exit(1);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			logger.error("Error in message", e);
 			System.exit(1);
 		}
 	}
