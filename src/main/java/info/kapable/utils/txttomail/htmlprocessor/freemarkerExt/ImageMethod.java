@@ -16,7 +16,6 @@ import freemarker.template.utility.DeepUnwrap;
  */
 public class ImageMethod implements TemplateMethodModelEx {
 	@SuppressWarnings("rawtypes")
-	@Override
 	public Object exec(List args) throws TemplateModelException {
 		// Get file and test if file exist
 		String filename = (String) DeepUnwrap.unwrap((TemplateModel) args

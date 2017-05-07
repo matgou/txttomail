@@ -102,7 +102,6 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 		PropertyConfigurator.configure(props); 
 	}
 
-	@Override
 	public void process() throws TemplateProcessingException {
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(this.input));

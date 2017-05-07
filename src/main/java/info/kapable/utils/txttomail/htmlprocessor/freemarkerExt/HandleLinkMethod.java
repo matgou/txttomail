@@ -17,7 +17,6 @@ public class HandleLinkMethod implements TemplateMethodModelEx {
 	private static final String URL_REGEX = "((\\\\\\\\|(https?|ftp|file)://)[-a-zA-Z0-9$+&@#/%\\\\?=~_|!:,.;]*[-a-zA-Z0-9+&@#\\$/%=~_|])";
 
 	@SuppressWarnings("rawtypes")
-	@Override
 	public Object exec(List args) throws TemplateModelException {
 		String text = (String) DeepUnwrap.unwrap((TemplateModel) args.get(0));
 		return this.exec(text);
