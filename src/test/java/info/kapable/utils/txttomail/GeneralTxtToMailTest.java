@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.internet.MimeMessage;
 
 import org.junit.Test;
 
@@ -23,13 +24,13 @@ public class GeneralTxtToMailTest {
 		String[] args = {"-i", "src/main/resources/mail.exemple.txt"};
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(args);
-		Email email = Email.getEmail();
-		assertTrue(email.getMessage() != null);
+		MimeMessage email = info.kapable.utils.txttomail.TxtToMail.getMimeMessage();
+		assertTrue(email != null);
 		try {
 			// Mail must containt something
-			assertTrue(email.getMessage().getContent() != null);
+			assertTrue(email.getContent() != null);
 
-			Multipart multipart = (Multipart) email.getMessage().getContent();
+			Multipart multipart = (Multipart) email.getContent();
 			// With Attachemnet multipart count must more than 2
 			assertTrue(multipart.getCount() > 2);
 		} catch (IOException e) {

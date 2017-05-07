@@ -1,5 +1,7 @@
 package info.kapable.utils.txttomail;
 
+import javax.mail.internet.MimeMessage;
+
 import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 
 /**
@@ -16,4 +18,6 @@ public abstract interface TemplateProcessor {
 	 * @throws TemplateProcessingException if some error during the process a TemplateProcessingException is throw
 	 */
 	public abstract void process() throws TemplateProcessingException;
+
+	public abstract MimeMessage getMessage();
 }

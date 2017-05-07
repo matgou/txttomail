@@ -2,6 +2,8 @@ package info.kapable.utils.txttomail;
 
 import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 
+import javax.mail.internet.MimeMessage;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -26,6 +28,7 @@ public class TxtToMail {
 	 * Set true when in testUnit context
 	 */
 	public static boolean testUnit = false;
+	private static MimeMessage message;
 
 	/**
 	 * The main function to start email sending
@@ -76,6 +79,7 @@ public class TxtToMail {
 			TemplateProcessor p = new TemplateProcessorImpl(inputFilePath,
 					configFilePath, outputFilePath);
 			p.process();
+			message = p.getMessage();
 		} catch (ParseException e) {
 			// Handle ParsingException
 			System.err.println("Parsing failed.  Reason: " + e.getMessage());
@@ -94,5 +98,9 @@ public class TxtToMail {
 	private static void help(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp("TxtToMail", options);
+	}
+
+	public static MimeMessage getMimeMessage() {
+		return message;
 	}
 }

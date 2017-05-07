@@ -16,6 +16,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Properties;
 
+import javax.mail.internet.MimeMessage;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -36,6 +38,11 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	 */
 	private Writer output;
 
+	/**
+	 * Interface to send email
+	 */
+	private EmailSender emailSender;
+	private MimeMessage message;
 	/**
 	 * Constructor to initialize TemplateProcessor from args
 	 * @param inputFilePath the path of input text file
@@ -76,7 +83,7 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 			}
 
 			// Push config to Email singleton
-			Email.getEmail().setConfig(config);
+			emailSender = EmailSender.getInstance(config);
 		} catch (FileNotFoundException e) {
 			throw new TemplateProcessingException(e);
 		} catch (IOException e) {
@@ -103,6 +110,7 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	}
 
 	public void process() throws TemplateProcessingException {
+		Email email = new Email();
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(this.input));
 		try {
@@ -110,13 +118,17 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 			// Read all line
 			while ((line = in.readLine()) != null) {
 				// Load line to Email object
-				Email.getEmail().convert(line);
+				email.convert(line);
 			}
 		} catch (IOException e) {
 			// If some error when reading inputStream
 			throw new TemplateProcessingException(e);
 		}
 		// Send email
-		Email.getEmail().flush(this.output);
+		this.message = emailSender.send(email);
+	}
+
+	public MimeMessage getMessage() {
+		return this.message;
 	}
 }

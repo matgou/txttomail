@@ -1,5 +1,3 @@
-<#import 'utils.ftl' as u>
-
 <p>
-<img style="width: 70%;" src="${u.image(line)}" />
+<img style="width: 70%;" src="cid:${line}" />
 </p>

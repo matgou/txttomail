@@ -1,5 +1,6 @@
 package info.kapable.utils.txttomail.htmlprocessor;
 
+import info.kapable.utils.txttomail.EmailSender;
 import info.kapable.utils.txttomail.domain.Email;
 import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 
@@ -51,7 +52,7 @@ public class FreemarkerHTMLProcessor extends HTMLProcessor
 		try {
 			TemplateLoader[] tl;
 			ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(), "/templates");
-			String templateBasePath = Email.getEmail().getConfig().getProperty("template.base.path");
+			String templateBasePath = EmailSender.getConfig().getProperty("template.base.path");
 			// if extra directory for template
 			if(templateBasePath != null) {
 				FileTemplateLoader ftl1 = new FileTemplateLoader(new File(templateBasePath));
