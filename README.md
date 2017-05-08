@@ -25,7 +25,7 @@ java -jar TxtToMail.jar -i mail.template -TO test@kapable.info
 java -jar TxtToMail.jar -i mail.template -SUBJECT "This is a test"
 java -jar TxtToMail.jar -i mail.template -TEXT "Hy, <br/>"
 java -jar TxtToMail.jar -i mail.template -TEXT "This is a test mail !"
-java -jar TxtToMail.jar -i mail.template -TEXT "This is a test mail !"
+java -jar TxtToMail.jar -i mail.template -CSV "src/main/resources/tab1.csv
 java -jar TxtToMail.jar -i mail.template -PJ "src/main/resources/tab1.csv
 ```
 

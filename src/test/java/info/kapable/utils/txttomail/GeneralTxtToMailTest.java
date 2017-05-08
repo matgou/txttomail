@@ -70,6 +70,12 @@ public class GeneralTxtToMailTest {
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsTEXT2);
 		
+
+		// Emulate : java -jar TxtToMail.jar -i mail.template -CSV "src/main/resources/tab1.csv"
+		String[] argsCSV = {"-i", "mail.template","-CSV", "src/main/resources/tab1.csv"};
+		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
+		info.kapable.utils.txttomail.TxtToMail.main(argsCSV);
+		
 		// Emulate : java -jar TxtToMail.jar -i mail.template -PJ "src/main/resources/tab1.csv"
 		String[] argsPJ = {"-i", "mail.template","-PJ", "src/main/resources/tab1.csv"};
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
