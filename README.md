@@ -40,6 +40,7 @@ You can specify some extra option like smtp-host by creating a .properties file 
 ```
 mail.smtp.host=smtp.myisp.com
 ```
+* Send the mail previously prepared :
 ```bash
 java -jar TxtToMail.jar -c config.properties -i mail.template -o output.eml -send
 ```
