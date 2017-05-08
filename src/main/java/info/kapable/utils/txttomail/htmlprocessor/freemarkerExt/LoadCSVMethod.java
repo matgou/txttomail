@@ -17,7 +17,7 @@ import java.util.List;
  * @author MGOULIN
  */
 public class LoadCSVMethod implements TemplateMethodModelEx {
-	/**
+	/**	
 	 * The separator of CSV
 	 */
 	private static final String cvsSplitBy = ",";

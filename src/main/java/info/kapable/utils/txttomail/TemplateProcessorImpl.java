@@ -9,12 +9,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.mail.MessagingException;
@@ -36,10 +39,6 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(TemplateProcessorImpl.class);
 
 	/**
-	 * Input Stream from inputFile
-	 */
-	private InputStream input;
-	/**
 	 * Writer to output
 	 */
 	private OutputStream output;
@@ -49,6 +48,8 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	 */
 	private EmailSender emailSender;
 	private MimeMessage message;
+
+	private String templatePath;
 	/**
 	 * Constructor to initialize TemplateProcessor from args
 	 * @param inputFilePath the path of input text file
@@ -59,9 +60,9 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	public TemplateProcessorImpl(String inputFilePath, String configFilePath,
 			String outputFilePath) throws TemplateProcessingException {
 		try {
-			// Load input file Path
-			this.input = new FileInputStream(inputFilePath);
-
+			// For output template 
+			this.templatePath = inputFilePath;
+			
 			// load default config
 			InputStream defaultConfigInput = TemplateProcessorImpl.class.getClassLoader().getResourceAsStream("config.properties");
 			Properties config = new Properties();
@@ -114,10 +115,61 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 		PropertyConfigurator.configure(props); 
 	}
 
-	public void process() throws TemplateProcessingException, IOException, MessagingException {
+	public void send(Email email) throws TemplateProcessingException, IOException, MessagingException {
+		
+		// Send email
+		this.message = emailSender.send(email);
+		if(output != null ) {
+			this.getMessage().writeTo(this.output);
+			logger.info("E-mail file written to output");
+		}
+	}
+
+	public MimeMessage getMessage() {
+		return this.message;
+	}
+
+	public void saveToInput(Email email) throws TemplateProcessingException {
+		try {
+			Iterator<Entry<String, String>> it;
+			Writer w = new FileWriter(this.templatePath);
+			// Process header
+			it = email.getHeaders().entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<String, String> header = it.next();
+				w.write(header.getKey() + ":" + header.getValue() + "\n");
+			}
+			// 
+			it = email.getAttachements().entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<String, String> attachment = it.next();
+				w.write(EmailSender.getProperty("attachementTag") + ":" + attachment.getValue() + "\n");
+			}
+			// Process body
+			for(String line: email.getBody()) {
+				w.write(line + "\n");
+			}
+			w.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public Email loadEmailFromInput() throws TemplateProcessingException {
 		Email email = new Email();
+
+		// Load input file Path
+		FileInputStream input;
+		try {
+			input = new FileInputStream(this.templatePath);
+		} catch (FileNotFoundException e1) {
+			return email;
+		}
+
 		BufferedReader in = new BufferedReader(
-				new InputStreamReader(this.input));
+				new InputStreamReader(input));
 		try {
 			String line;
 			// Read all line
@@ -129,15 +181,11 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 			// If some error when reading inputStream
 			throw new TemplateProcessingException(e);
 		}
-		// Send email
-		this.message = emailSender.send(email);
-		if(output != null ) {
-			this.getMessage().writeTo(this.output);
-			logger.info("E-mail file written to output");
+		try {
+			in.close();
+		} catch (IOException e) {
+			throw new TemplateProcessingException(e);
 		}
-	}
-
-	public MimeMessage getMessage() {
-		return this.message;
+		return email;
 	}
 }

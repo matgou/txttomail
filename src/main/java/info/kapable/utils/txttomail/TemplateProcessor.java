@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import info.kapable.utils.txttomail.domain.Email;
 import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 
 /**
@@ -17,12 +18,17 @@ import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 public abstract interface TemplateProcessor {
 	/**
 	 * Process method to launch conversion: prepare and send email
+	 * @param email 
 	 * 
 	 * @throws TemplateProcessingException if some error during the process a TemplateProcessingException is throw
 	 * @throws MessagingException 
 	 * @throws IOException 
 	 */
-	public abstract void process() throws TemplateProcessingException, IOException, MessagingException;
+	public abstract void send(Email email) throws TemplateProcessingException, IOException, MessagingException;
 
 	public abstract MimeMessage getMessage();
+
+	public abstract void saveToInput(Email email) throws TemplateProcessingException;
+
+	public abstract Email loadEmailFromInput() throws TemplateProcessingException;
 }
