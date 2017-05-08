@@ -39,7 +39,10 @@ public class TxtToMail {
 	public static boolean testUnit = false;
 	private static MimeMessage message;
 
+	public static int rc;
+
 	private static void exit(int rc) {
+		TxtToMail.rc  = rc;
 		if(TxtToMail.testUnit == false) {
 			System.exit(rc);
 		}
@@ -54,6 +57,7 @@ public class TxtToMail {
 		String inputFilePath; // path to text input file
 		String configFilePath = null; // path to properties format file
 		message=null;
+		rc = 0;
 		
 		// Parsing Option, sea apache.commons.cli
 		Options options = new Options();
@@ -145,7 +149,6 @@ public class TxtToMail {
 			logger.error("Error in message", e);
 			exit(1);
 		}
-		exit(0);
 	}
 
 	/**

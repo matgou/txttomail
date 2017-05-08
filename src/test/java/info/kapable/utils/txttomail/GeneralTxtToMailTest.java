@@ -19,6 +19,18 @@ import org.junit.Test;
 public class GeneralTxtToMailTest {
 
 	@Test
+	public void testInvalidSyntax() {
+		String argsWithoutInput[] = {"-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
+		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
+		info.kapable.utils.txttomail.TxtToMail.main(argsWithoutInput);
+		assertTrue(TxtToMail.rc != 0);
+		
+		String argsSendWithoutTo[] = {"-send", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
+		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
+		info.kapable.utils.txttomail.TxtToMail.main(argsSendWithoutTo);
+		assertTrue(TxtToMail.rc != 0);
+	}
+	@Test
 	public void testAllInOneComand() {
 		String args[] = {"--send", "-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
