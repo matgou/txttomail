@@ -3,6 +3,7 @@
 A customizable java tools to send HTML mail from command line. With attachments, images, arrays, inside. 
 
 [![Build Status](https://travis-ci.org/matgou/txttomail.svg?branch=master)](https://travis-ci.org/matgou/txttomail)
+[![codecov.io](https://codecov.io/github/matgou/txttomail/coverage.svg?branch=master)](https://codecov.io/github/matgou/txttomail?branch=master)
 
 ## Usage via command line :
 
