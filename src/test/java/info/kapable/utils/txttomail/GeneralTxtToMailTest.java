@@ -29,6 +29,11 @@ public class GeneralTxtToMailTest {
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsSendWithoutTo);
 		assertTrue(TxtToMail.rc != 0);
+		
+		String argsSendNotAnEmail[] = {"--send", "-TO", "not an email", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
+		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
+		info.kapable.utils.txttomail.TxtToMail.main(argsSendNotAnEmail);
+		assertTrue(TxtToMail.rc != 0);
 	}
 	@Test
 	public void testAllInOneComand() {
