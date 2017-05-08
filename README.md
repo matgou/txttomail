@@ -49,4 +49,11 @@ java -jar TxtToMail.jar -c config.properties -i mail.template -o output.eml -sen
 
 ## Customizing
 
+TODO
 
+## Building from source
+
+To build from source use mvn :
+```bash
+mvn clean test package
+```
