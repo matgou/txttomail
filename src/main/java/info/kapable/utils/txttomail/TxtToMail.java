@@ -39,6 +39,11 @@ public class TxtToMail {
 	public static boolean testUnit = false;
 	private static MimeMessage message;
 
+	private static void exit(int rc) {
+		if(TxtToMail.testUnit == false) {
+			System.exit(rc);
+		}
+	}
 	/**
 	 * The main function to start email sending
 	 * @param args Arguments : -i, inputFilePath, -c, configFilePath
@@ -48,6 +53,7 @@ public class TxtToMail {
 		String outputFilePath = null; // path to html output file
 		String inputFilePath; // path to text input file
 		String configFilePath = null; // path to properties format file
+		message=null;
 		
 		// Parsing Option, sea apache.commons.cli
 		Options options = new Options();
@@ -65,11 +71,11 @@ public class TxtToMail {
 			// Help option => display help and exit != 0
 			if (cmd.hasOption("help")) {
 				help(options);
-				System.exit(1);
+				exit(1);
 			}
 
 			// Input option is mandatory
-			if (!cmd.hasOption("input")) {
+			if (!cmd.hasOption("input") && !cmd.hasOption("send")) {
 				throw new ParseException(
 						"input file path parameters is required");
 			}
@@ -91,11 +97,19 @@ public class TxtToMail {
 			
 			List<String> listArgs = cmd.getArgList();
 			Email email = p.loadEmailFromInput();
+			boolean hasTo = false;
+			boolean hasSubject = false;
 			for(int n = 0; n < listArgs.size(); n++) {
-				if(listArgs.size() <= n + 2) {
+				if(listArgs.size() >= n + 2) {
 					String tag = listArgs.get(n).substring(listArgs.get(n).lastIndexOf("-")+1);
 					String value = listArgs.get(n+1);
 					email.convert(tag + ":" + value);
+					if(tag.contentEquals(EmailSender.getProperty("toTag"))) {
+						hasTo = true;
+					}
+					if(tag.contentEquals(EmailSender.getProperty("subjectTag"))) {
+						hasSubject = true;
+					}
 				} else {
 					throw new ParseException("No value for args : " + listArgs.get(n));
 				}
@@ -104,6 +118,10 @@ public class TxtToMail {
 			}
 			
 			if(cmd.hasOption("send")) {
+				if((!hasTo || !hasSubject) && !cmd.hasOption("input"))
+				{
+					throw new ParseException("if you want send email please specify value for : \n* " + EmailSender.getProperty("toTag") + "\n* " + EmailSender.getProperty("subjectTag"));
+				}
 				// With option start a new processor from input file to mail
 				p.send(email);
 				message = p.getMessage();
@@ -114,19 +132,20 @@ public class TxtToMail {
 			// Handle ParsingException
 			System.err.println("Parsing failed.  Reason: " + e.getMessage());
 			help(options);
-			System.exit(1);
+			exit(1);
 		} catch (TemplateProcessingException e) {
 			// If TemplateProcessor throw and Exception exit != 1
-			System.exit(1);
+			exit(1);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error while write output", e);
-			System.exit(1);
+			exit(1);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error in message", e);
-			System.exit(1);
+			exit(1);
 		}
+		exit(0);
 	}
 
 	/**

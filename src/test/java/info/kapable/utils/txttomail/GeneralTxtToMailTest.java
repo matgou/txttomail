@@ -19,6 +19,28 @@ import org.junit.Test;
 public class GeneralTxtToMailTest {
 
 	@Test
+	public void testAllInOneComand() {
+		String args[] = {"--send", "-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
+		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
+		info.kapable.utils.txttomail.TxtToMail.main(args);
+		
+		// Do some check
+		MimeMessage email = info.kapable.utils.txttomail.TxtToMail.getMimeMessage();
+		assertTrue(email != null);
+		try {
+			// Mail must contain something
+			assertTrue(email.getContent() != null);
+
+			Multipart multipart = (Multipart) email.getContent();
+			// With Attachment multipart count must more than 2
+			assertTrue(multipart.getCount() >= 2);
+		} catch (IOException e) {
+			assertTrue(false);
+		} catch (MessagingException e) {
+			assertTrue(false);
+		}
+	}
+	@Test
 	/**
 	 * Test REAMDE
 	 */

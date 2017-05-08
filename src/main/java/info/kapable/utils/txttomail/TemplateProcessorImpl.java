@@ -163,7 +163,11 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 		// Load input file Path
 		FileInputStream input;
 		try {
-			input = new FileInputStream(this.templatePath);
+			if(this.templatePath != null) {
+				input = new FileInputStream(this.templatePath);
+			} else {
+				return email;
+			}
 		} catch (FileNotFoundException e1) {
 			return email;
 		}
