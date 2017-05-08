@@ -138,7 +138,7 @@ public class EmailSender {
 			message.setContent(multiPart);
 			// send message 
 			if (!TxtToMail.testUnit) {
-				logger.info("Message sent.");
+				logger.info("Message sent : to=" + headers.get(getProperty("toTag")) + ", subject=" + headers.get(getProperty("subjectTag")));
 				javax.mail.Transport.send(message);
 			}
 			
