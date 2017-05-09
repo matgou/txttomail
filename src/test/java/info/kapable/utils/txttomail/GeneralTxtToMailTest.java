@@ -103,6 +103,11 @@ public class GeneralTxtToMailTest {
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsPJ);
 
+		// Emulate : java -jar TxtToMail.jar -i mail.template -IMG "Logo.png"
+		String[] argsIMG = {"-i", "mail.template","-IMG", "Logo.png"};
+		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
+		info.kapable.utils.txttomail.TxtToMail.main(argsIMG);
+		
 		// Emulate java -jar TxtToMail.jar -i mail.template -o output.eml -send
 		String[] argsSend = {"-i", "mail.template", "-o", "output.eml", "-send"};
 		info.kapable.utils.txttomail.TxtToMail.main(argsSend);
