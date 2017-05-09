@@ -1,1 +1,1 @@
-<pre style="background-color:#C0C0C0;color:black;">${line}</pre>
+<#if (previusTag)?? && previusTag != "RAW"><pre style="background-color:#C0C0C0;color:black;"></#if><#if !(previusTag)??><pre style="background-color:#C0C0C0;color:black;"></#if>${line}<#if (nextTag)?? && nextTag != "RAW"></pre></#if><#if !(nextTag)??></pre></#if>

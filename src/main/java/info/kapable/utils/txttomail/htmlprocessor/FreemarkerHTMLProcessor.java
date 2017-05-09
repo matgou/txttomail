@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
@@ -77,12 +79,18 @@ public class FreemarkerHTMLProcessor extends HTMLProcessor
 	}
 
 	@Override
-	public void process(String string, Writer out)
+	public void process(String string, Map<String, Object> mapExtrat, Writer out)
 			throws TemplateProcessingException
 	{
-		this.data.put("line", string);
+		Map<String, Object> map = mapExtrat;
+		Iterator<Entry<String, Object>> it = this.data.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<String, Object> o = it.next();
+			map.put(o.getKey(), o.getValue());
+		}
+		map.put("line", string);
 		try {
-			this.template.process(this.data, out);
+			this.template.process(map, out);
 		} catch (TemplateException e) {
 			throw new TemplateProcessingException(e);
 		} catch (IOException e) {

@@ -3,6 +3,7 @@ package info.kapable.utils.txttomail;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +98,7 @@ public class EmailSender {
 			HTMLProcessor p = HTMLProcessorBuilder.getStringProcessor(
 					subjectTemplate, email, headers);
 			StringWriter strWriter = new StringWriter();
-			p.process("", strWriter);
+			p.process("", new HashMap<String, Object>(), strWriter);
 			message.setSubject(strWriter.toString());
 
 			// build the textPart of mail
@@ -184,21 +185,33 @@ public class EmailSender {
 		// writer header
 		HTMLProcessor headerProcessor = HTMLProcessorBuilder
 				.getTemplateProcessor("head", email, EmailSender.config, email.getHeaders());
-		headerProcessor.process("", out);
+		headerProcessor.process("", new HashMap<String, Object>(), out);
 		
 		// for each line
-		for (String line : email.getBody()) {
+		for (int i = 0; i < email.getBody().size(); i++) {
+			String line = email.getBody().get(i);
 			String tag = Utils.getTag(line);
+			Map<String,Object> mapExtrat = new HashMap<String, Object>();
+			// if not the last 
+			if (i < email.getBody().size() - 1) {
+				String nextTag = Utils.getTag(email.getBody().get(i+1));
+				mapExtrat.put("nextTag", nextTag);
+			}
+			// if not the firts
+			if (i > 0) {
+				String previusTag = Utils.getTag(email.getBody().get(i-1));
+				mapExtrat.put("previusTag", previusTag);
+			}
 			// process
 			HTMLProcessor p = HTMLProcessorBuilder.getTemplateProcessor("tag."
 					+ tag, email, EmailSender.config, email.getHeaders());
-			p.process(Utils.getValue(line), out);
+			p.process(Utils.getValue(line), mapExtrat, out);
 		}
 
 		// write footer
 		HTMLProcessor footerProcessor = HTMLProcessorBuilder
 				.getTemplateProcessor("foot", email, EmailSender.config, email.getHeaders());
-		footerProcessor.process("", out);
+		footerProcessor.process("", new HashMap<String, Object>(), out);
 
 		return out.toString();
 	}
