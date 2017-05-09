@@ -93,7 +93,7 @@ public class Email {
 	
 	/**
 	 * return the value of attachment field 
-	 * @return all attachment (contentId => file path) to put in attachment of email
+	 * @return all attachment (contentId = file path) to put in attachment of email
 	 */
 	public Map<String, String> getAttachements() {
 		return attachements;

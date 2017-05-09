@@ -14,7 +14,7 @@ public abstract class HTMLProcessor
 	/**
 	 * Function to process paramString to writer
 	 * @param paramString the body part
-	 * @param mapExtrat 
+	 * @param mapExtrat extra parameters to passe to processor
 	 * @param paramWriter the writer
 	 * @throws TemplateProcessingException on error throw TemplateProcessingException
 	 */

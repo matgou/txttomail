@@ -44,7 +44,7 @@ public class FreemarkerHTMLProcessor extends HTMLProcessor
 	/**
 	 * Constructor of object
 	 * @param templatePath the path (relative from template.base.path) to the template
-	 * @param email 
+	 * @param email the email to add some attachment if needed (for img)
 	 * @param data metadata array
 	 * @throws TemplateProcessingException on error throw
 	 */

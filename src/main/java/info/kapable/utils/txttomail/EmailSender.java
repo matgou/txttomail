@@ -65,8 +65,9 @@ public class EmailSender {
 
 	/**
 	 * Build email multipart and send it
-	 * @param output and Writer to html (nullable)
+	 * @param email the email to send
 	 * @throws TemplateProcessingException if error during process
+	 * @return the javax.mail object sended
 	 */
 	public MimeMessage send(Email email) throws TemplateProcessingException {
 		Map<String, String> headers = email.getHeaders();

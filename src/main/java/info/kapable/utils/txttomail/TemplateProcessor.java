@@ -18,11 +18,11 @@ import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 public abstract interface TemplateProcessor {
 	/**
 	 * Process method to launch conversion: prepare and send email
-	 * @param email 
+	 * @param email the email to send
 	 * 
 	 * @throws TemplateProcessingException if some error during the process a TemplateProcessingException is throw
-	 * @throws MessagingException 
-	 * @throws IOException 
+	 * @throws MessagingException when some error in javax.mail api 
+	 * @throws IOException when some error during reading
 	 */
 	public abstract void send(Email email) throws TemplateProcessingException, IOException, MessagingException;
 
