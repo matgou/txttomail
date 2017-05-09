@@ -19,7 +19,6 @@ public class ImageHandle implements TemplateMethodModelEx {
 	}
 
 	@SuppressWarnings("rawtypes")
-	@Override
 	public Object exec(List args) throws TemplateModelException {
 		String text = (String) DeepUnwrap.unwrap((TemplateModel) args.get(0));
 		return this.exec(text);
