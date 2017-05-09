@@ -21,6 +21,7 @@ public class TemplateProcessingException extends Exception {
 	 */
 	@CoverageIgnore
 	public TemplateProcessingException(Exception e) {
+		super(e.getMessage());
 		logger.error(e.getMessage(), e);
 	}
 
