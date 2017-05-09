@@ -1,5 +1,7 @@
 package info.kapable.utils.txttomail.exception;
 
+import info.kapable.utils.txttomail.other.CoverageIgnore;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ public class TemplateProcessingException extends Exception {
 	 * Construct exception from other Exception
 	 * @param e the other exception
 	 */
+	@CoverageIgnore
 	public TemplateProcessingException(Exception e) {
 		logger.error(e.getMessage(), e);
 	}
@@ -25,6 +28,7 @@ public class TemplateProcessingException extends Exception {
 	 * Construct exception from an error message
 	 * @param message the message to display
 	 */
+	@CoverageIgnore
 	public TemplateProcessingException(String message) {
 		super(message);
 		logger.error(message, this);
