@@ -61,7 +61,7 @@
 				<version>2.1</version>
 				<configuration>
 					<descriptorRefs>
-						<descriptorRef>-with-dependencies</descriptorRef>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 				</configuration>
 				<executions>
@@ -102,9 +102,10 @@
 
 	</build>
 	<url>https://github.com/matgou/txttomail</url>
-	<scm>	  
-		<connection>scm:git:git@github.com:matgou/txttomail.git</connection>
-		<url>scm:git:git@github.com:matgou/txttomail.git</url>
-		<developerConnection>scm:git:git@github.com:matgou/txttomail.git</developerConnection>
+	<scm>
+		<url>scm:git:https://github.com/matgou/txttomail.git</url>
+		<developerConnection>scm:git:https://github.com/matgou/txttomail.git</developerConnection>
+	  	<tag>HEAD</tag>
+		<connection>scm:git:https://github.com/matgou/txttomail.git</connection>
   	</scm>
 </project>
