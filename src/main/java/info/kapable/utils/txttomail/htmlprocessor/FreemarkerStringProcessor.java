@@ -1,6 +1,7 @@
 package info.kapable.utils.txttomail.htmlprocessor;
 
 import freemarker.template.Template;
+import info.kapable.utils.txttomail.domain.Email;
 import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 
 import java.io.IOException;
@@ -12,9 +13,9 @@ import java.util.Map;
  * @author MGOULIN
  */
 public class FreemarkerStringProcessor extends FreemarkerHTMLProcessor {
-	public FreemarkerStringProcessor(String templateStr,
+	public FreemarkerStringProcessor(String templateStr, Email email,
 			Map<String, String> data) throws TemplateProcessingException {
-		super("", data);
+		super("", email, data);
 		try {
 			this.template = new Template("name", new StringReader(templateStr),
 					this.cfg);

@@ -7,6 +7,7 @@ import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.Map;
 
 import freemarker.cache.ClassTemplateLoader;
@@ -32,7 +33,7 @@ public class FreemarkerHTMLProcessor extends HTMLProcessor
 	/**
 	 * the metadata
 	 */
-	private Map<String, String> data;
+	private Map<String, Object> data;
 	/**
 	 * Configuration
 	 */
@@ -41,11 +42,13 @@ public class FreemarkerHTMLProcessor extends HTMLProcessor
 	/**
 	 * Constructor of object
 	 * @param templatePath the path (relative from template.base.path) to the template
+	 * @param email 
 	 * @param data metadata array
 	 * @throws TemplateProcessingException on error throw
 	 */
-	public FreemarkerHTMLProcessor(String templatePath, Map<String, String> data) throws TemplateProcessingException
+	public FreemarkerHTMLProcessor(String templatePath, Email email, Map<String, String> data) throws TemplateProcessingException
 	{
+		this.data = new HashMap<String, Object>();
 		this.cfg = new Configuration(Configuration.VERSION_2_3_23);
 		this.cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 		this.cfg.setDefaultEncoding("UTF-8");
@@ -69,7 +72,8 @@ public class FreemarkerHTMLProcessor extends HTMLProcessor
 		} catch (IOException e) {
 			throw new TemplateProcessingException(e);
 		}
-		this.data = data;
+		this.data.put("headers", data);
+		this.data.put("email", email);
 	}
 
 	@Override

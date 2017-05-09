@@ -95,7 +95,7 @@ public class EmailSender {
 			// Get the subject template and process it to insert value from metadata 
 			String subjectTemplate = getProperty("mail.subject.format");
 			HTMLProcessor p = HTMLProcessorBuilder.getStringProcessor(
-					subjectTemplate, headers);
+					subjectTemplate, email, headers);
 			StringWriter strWriter = new StringWriter();
 			p.process("", strWriter);
 			message.setSubject(strWriter.toString());
@@ -120,10 +120,13 @@ public class EmailSender {
 				Map.Entry<String, String> entry = it.next();
 				String filename = entry.getValue();
 				File f = new File(filename);
+				if(!f.exists()) {
+					f = new File(EmailSender.getProperty("template.base.path") + "/" +filename);
+				}
 				if ((f.exists()) && (!f.isDirectory())) {
 					MimeBodyPart messageBodyPart = new MimeBodyPart();
 					DataSource source = new javax.activation.FileDataSource(
-							filename);
+							f.getAbsolutePath());
 					messageBodyPart
 							.setDataHandler(new javax.activation.DataHandler(
 									source));
@@ -180,7 +183,7 @@ public class EmailSender {
 	private String bodyHTML(Email email, Writer out) throws TemplateProcessingException {
 		// writer header
 		HTMLProcessor headerProcessor = HTMLProcessorBuilder
-				.getTemplateProcessor("head", EmailSender.config, email.getHeaders());
+				.getTemplateProcessor("head", email, EmailSender.config, email.getHeaders());
 		headerProcessor.process("", out);
 		
 		// for each line
@@ -188,13 +191,13 @@ public class EmailSender {
 			String tag = Utils.getTag(line);
 			// process
 			HTMLProcessor p = HTMLProcessorBuilder.getTemplateProcessor("tag."
-					+ tag, EmailSender.config, email.getHeaders());
+					+ tag, email, EmailSender.config, email.getHeaders());
 			p.process(Utils.getValue(line), out);
 		}
 
 		// write footer
 		HTMLProcessor footerProcessor = HTMLProcessorBuilder
-				.getTemplateProcessor("foot", EmailSender.config, email.getHeaders());
+				.getTemplateProcessor("foot", email, EmailSender.config, email.getHeaders());
 		footerProcessor.process("", out);
 
 		return out.toString();
