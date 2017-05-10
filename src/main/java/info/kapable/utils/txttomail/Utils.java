@@ -1,7 +1,6 @@
 package info.kapable.utils.txttomail;
 
 import java.io.File;
-import info.kapable.utils.txttomail.other.CoverageIgnore;
 /**
  * This class for static Util method <br>
  * 
@@ -18,7 +17,6 @@ public final class Utils {
 	/**
 	 * private constructor to prevent class instantiation
 	 */
-	@CoverageIgnore
 	private Utils () {
     }
 
