@@ -108,7 +108,13 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 		} catch (IOException e) { 
 			System.out.println("Errornot laod configuration file "); 
 		} 
+		props.setProperty("log4j.rootLogger", "INFO, file, stdout"); 
 		props.setProperty("log4j.appender.file.File", logFile); 
+		props.setProperty("log4j.appender.file","org.apache.log4j.RollingFileAppender");
+		props.setProperty("log4j.appender.file.MaxFileSize","10MB");
+		props.setProperty("log4j.appender.file.MaxBackupIndex","10");
+		props.setProperty("log4j.appender.file.layout","org.apache.log4j.PatternLayout");
+		props.setProperty("log4j.appender.file.layout.ConversionPattern","%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n");
 		LogManager.resetConfiguration(); 
 		PropertyConfigurator.configure(props); 
 	}
