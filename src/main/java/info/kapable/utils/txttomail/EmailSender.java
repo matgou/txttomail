@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.activation.DataSource;
 import javax.mail.Message;
@@ -75,7 +76,10 @@ public class EmailSender {
 		
 		// Create the message
 		Session session = Session.getInstance(EmailSender.config);
-		MimeMessage message = new MimeMessage(session);
+		MimeMessage message = new MimeMessage(session) {
+			    @Override
+			    protected void updateMessageID() { } // Prevent MimeMessage from overwriting our Message-ID
+		};
 		Multipart multiPart = new MimeMultipart("alternative");
 		
 		try {
@@ -83,6 +87,10 @@ public class EmailSender {
 			if (headers.get(getProperty("fromTag")) != null) {
 				message.setFrom(new InternetAddress(headers
 						.get(getProperty("fromTag"))));
+			}
+			
+			if (getProperty("messageIdPrefix") != null) {
+				message.setHeader("Message-ID", getProperty("messageIdPrefix") + "-" + UUID.randomUUID().toString() + "@" + getProperty("messageIdSuffix"));
 			}
 			// insert in message object the toTag if exist
 			if (headers.get(getProperty("toTag")) != null) {
