@@ -3,10 +3,12 @@ package info.kapable.utils.txttomail;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -92,6 +94,17 @@ public class EmailSender {
 			if (getProperty("messageIdPrefix") != null) {
 				message.setHeader("Message-ID", getProperty("messageIdPrefix") + "-" + UUID.randomUUID().toString() + "@" + getProperty("messageIdSuffix"));
 			}
+			
+			// Insert into message dynamic header
+			Map<String,String> dynamicHeader = getSubProperty("headers");
+			Iterator<Entry<String, String>> itDynamicHeader = dynamicHeader.entrySet().iterator();
+			while (itDynamicHeader.hasNext()) {
+				Entry<String, String> entry = itDynamicHeader.next();
+				String headerName = entry.getKey().replace("headers.", "");
+				String headerValue = entry.getValue();
+				message.setHeader(headerName, headerValue);
+			}
+			
 			// insert in message object the toTag if exist
 			if (headers.get(getProperty("toTag")) != null) {
 				message.setRecipients(Message.RecipientType.TO, InternetAddress
@@ -180,6 +193,21 @@ public class EmailSender {
 			throw new TemplateProcessingException("Unable to find key '" + key + "' in properties file");
 		}
 		return val;
+	}
+	
+	public static Map<String,String> getSubProperty(String key) throws TemplateProcessingException {
+		if(config == null) {
+			throw new TemplateProcessingException("Unable to find key '" + key + "' in properties, no properties set in Email singleton, please call Email.setConfig before use getProperty");
+		}
+		Map<String,String> map = new HashMap<String,String>();
+		for (Enumeration<?> e = config.propertyNames(); e.hasMoreElements(); ) {
+			String name = (String)e.nextElement();
+		    String value = getProperty(name);
+		    if (name.startsWith(key)) {
+		    	map.put(name, value);
+		    }
+		}
+		return map;
 	}
 	
 
