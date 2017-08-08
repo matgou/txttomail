@@ -54,6 +54,7 @@ public class TxtToMail {
 	public static void main(String[] args) {
 		// Default null to handle no -o option
 		String outputFilePath = null; // path to html output file
+		String htmlOutputFilePath = null; // path to eml output file
 		String inputFilePath; // path to text input file
 		String configFilePath = null; // path to properties format file
 		message=null;
@@ -66,6 +67,7 @@ public class TxtToMail {
 		options.addOption("i", "input", true, "Txt input file");
 		options.addOption("o", "output", true, "Txt output file");
 		options.addOption("s", "send", false, "Send the email from input file template");
+		options.addOption("h", "html", true, "Simulate sending by creating an HTML file");
 		
 		options.addOption("help", false, "Print help");
 
@@ -96,8 +98,13 @@ public class TxtToMail {
 				outputFilePath = cmd.getOptionValue("output");
 			}
 			
+			// output option is optional
+			if (cmd.hasOption("html")) {
+				htmlOutputFilePath = cmd.getOptionValue("html");
+			}
+			
 			TemplateProcessor p = new TemplateProcessorImpl(inputFilePath,
-					configFilePath, outputFilePath);
+					configFilePath, outputFilePath, htmlOutputFilePath);
 			
 			List<String> listArgs = cmd.getArgList();
 			Email email = p.loadEmailFromInput();
@@ -119,6 +126,10 @@ public class TxtToMail {
 				}
 				// switch value
 				n = n+1;
+			}
+			// output option is optional
+			if (cmd.hasOption("html")) {
+				p.saveHtml(email);
 			}
 			
 			if(cmd.hasOption("send")) {

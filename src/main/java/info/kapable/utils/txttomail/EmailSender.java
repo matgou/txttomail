@@ -218,7 +218,7 @@ public class EmailSender {
 	 * @return
 	 * @throws TemplateProcessingException
 	 */
-	private String bodyHTML(Email email, Writer out) throws TemplateProcessingException {
+	String bodyHTML(Email email, Writer out) throws TemplateProcessingException {
 		// writer header
 		HTMLProcessor headerProcessor = HTMLProcessorBuilder
 				.getTemplateProcessor("head", email, EmailSender.config, email.getHeaders());

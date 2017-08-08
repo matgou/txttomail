@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -40,6 +42,7 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	 * Writer to output
 	 */
 	private OutputStream output;
+	private OutputStream htmlOutput;
 
 	/**
 	 * Interface to send email
@@ -53,10 +56,11 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	 * @param inputFilePath the path of input text file
 	 * @param configFilePath the path of properties file
 	 * @param outputFilePath the path of output html file
+	 * @param htmlOutputFilePath 
 	 * @throws TemplateProcessingException if some error during the process a TemplateProcessingException is throw
 	 */
 	public TemplateProcessorImpl(String inputFilePath, String configFilePath,
-			String outputFilePath) throws TemplateProcessingException {
+			String outputFilePath, String htmlOutputFilePath) throws TemplateProcessingException {
 		try {
 			// For output template 
 			this.templatePath = inputFilePath;
@@ -86,6 +90,10 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 				this.output = new FileOutputStream(outputFilePath);
 			}
 
+			// Create an output writer
+			if (htmlOutputFilePath != null) {
+				this.htmlOutput = new FileOutputStream(htmlOutputFilePath);
+			}
 			// Push config to Email singleton
 			emailSender = EmailSender.getInstance(config);
 		} catch (FileNotFoundException e) {
@@ -195,5 +203,13 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 			throw new TemplateProcessingException(e);
 		}
 		return email;
+	}
+
+	@Override
+	public void saveHtml(Email email) throws TemplateProcessingException {
+		PrintWriter p = new PrintWriter(this.htmlOutput);
+		emailSender.bodyHTML(email, p);
+		p.flush();
+		p.close();
 	}
 }

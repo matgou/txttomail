@@ -31,4 +31,6 @@ public abstract interface TemplateProcessor {
 	public abstract void saveToInput(Email email) throws TemplateProcessingException;
 
 	public abstract Email loadEmailFromInput() throws TemplateProcessingException;
+
+	public abstract void saveHtml(Email email) throws TemplateProcessingException;
 }
