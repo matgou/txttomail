@@ -20,7 +20,9 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.LogManager;
@@ -208,7 +210,10 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	@Override
 	public void saveHtml(Email email) throws TemplateProcessingException {
 		PrintWriter p = new PrintWriter(this.htmlOutput);
+		String title = emailSender.subject(email);
+		p.write("<html><head><title>"+ title + "</title></head><body>");
 		emailSender.bodyHTML(email, p);
+		p.write("</body></html>");
 		p.flush();
 		p.close();
 	}

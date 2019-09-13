@@ -121,7 +121,7 @@ public class EmailSender {
 					subjectTemplate, email, headers);
 			StringWriter strWriter = new StringWriter();
 			p.process("", new HashMap<String, Object>(), strWriter);
-			message.setSubject(strWriter.toString());
+			message.setSubject(subject(email));
 
 			// build the textPart of mail
 			MimeBodyPart textPart = new MimeBodyPart();
@@ -296,6 +296,16 @@ public class EmailSender {
 
 	public static Properties getConfig() {
 		return config;
+	}
+
+	public String subject(Email email) throws TemplateProcessingException {
+		// Get the subject template and process it to insert value from metadata 
+		String subjectTemplate = getProperty("mail.subject.format");
+		HTMLProcessor p = HTMLProcessorBuilder.getStringProcessor(
+			subjectTemplate, email, email.getHeaders());
+		StringWriter strWriter = new StringWriter();
+		p.process("", new HashMap<String, Object>(), strWriter);
+		return strWriter.toString();
 	}
 
 }

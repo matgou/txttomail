@@ -20,13 +20,17 @@ public class LoadCSVMethod implements TemplateMethodModelEx {
 	/**	
 	 * The separator of CSV
 	 */
-	private static final String cvsSplitBy = ",";
+	private String cvsSplitBy = ",";
 
 	@SuppressWarnings("rawtypes")
 	public Object exec(List args) throws TemplateModelException {
 		String csvFile = (String) DeepUnwrap
 				.unwrap((TemplateModel) args.get(0));
-		
+
+		if(args.size() > 1) {
+			this.cvsSplitBy = (String) DeepUnwrap
+				.unwrap((TemplateModel) args.get(1));
+		}
 		return exec(csvFile);
 	}
 
