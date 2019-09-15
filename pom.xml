@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>info.kapable.utils</groupId>
 	<artifactId>txttomail</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<name>TxtToMail</name>
 	<description>Java convert from txt to html email</description>
 
