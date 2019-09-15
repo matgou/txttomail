@@ -188,8 +188,8 @@
 	<url>https://github.com/matgou/txttomail</url>
 	<scm>
 		<connection>scm:git:https://github.com/matgou/txttomail.git</connection>
-		<url>scm:git:https://github.com/matgou/txttomail.git</url>
-		<developerConnection>scm:git:https://github.com/matgou/txttomail.git</developerConnection>
+		<url>scm:git:git@github.com:matgou/txttomail.git</url>
+		<developerConnection>scm:git:git@github.com:matgou/txttomail.git</developerConnection>
 	  <tag>txttomail-1.0.2</tag>
   </scm>
 </project>
