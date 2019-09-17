@@ -106,6 +106,45 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 	}
 
 	/**
+	 * Constructor to initialize TemplateProcessor from args
+	 * @param inputFile the path of input text file
+	 * @param customConfig Custom properties object
+	 * @param outputFilePath the path of output html file
+	 * @param htmlOutputFilePath 
+	 * @throws TemplateProcessingException if some error during the process a TemplateProcessingException is throw
+	 */
+	public TemplateProcessorImpl(File inputFile, Properties customConfig, String outputFilePath, String htmlOutputFilePath) throws TemplateProcessingException {
+		try {
+			// For output template 
+			this.templatePath = inputFile.getAbsolutePath();
+			
+			Properties config = new Properties();
+			// load default config
+			InputStream defaultConfigInput = TemplateProcessorImpl.class.getClassLoader().getResourceAsStream("config.properties");
+			config.load(defaultConfigInput);
+
+			// Load config
+			config.putAll(customConfig);
+
+			// Create an output writer
+			if (outputFilePath != null) {
+				this.output = new FileOutputStream(outputFilePath);
+			}
+
+			// Create an output writer
+			if (htmlOutputFilePath != null) {
+				this.htmlOutput = new FileOutputStream(htmlOutputFilePath);
+			}
+			// Push config to Email singleton
+			emailSender = EmailSender.getInstance(config);
+		} catch (FileNotFoundException e) {
+			throw new TemplateProcessingException(e);
+		} catch (IOException e) {
+			throw new TemplateProcessingException(e);
+		}
+	}
+
+	/**
 	 * Update logfile in log4j
 	 * @param logFile
 	 */
