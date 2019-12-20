@@ -33,14 +33,14 @@ import info.kapable.utils.txttomail.textprocessor.TextProcessor;
 import info.kapable.utils.txttomail.textprocessor.TextProcessorBuilder;
 
 /**
- * EmailSender is an singleton object :
- * * * build HTML and TXT part of email <br>
+ * EmailSender is an singleton object : * * build HTML and TXT part of email
+ * <br>
  * * format mime file with attachement and link via contentId<br>
  * * send email via Javax.mail api<br>
  */
 public class EmailSender {
 	private static final Logger logger = LoggerFactory.getLogger(EmailSender.class);
-	
+
 	/**
 	 * Config to access properties
 	 */
@@ -50,17 +50,17 @@ public class EmailSender {
 	 * Singleton object
 	 */
 	private static EmailSender instance;
-	
+
 	public static EmailSender getInstance(Properties config) {
 		EmailSender.config = config;
-		if(instance == null) {
+		if (instance == null) {
 			instance = new EmailSender();
 		}
 		return instance;
 	}
 
 	public static EmailSender getInstance() {
-		if(instance != null) {
+		if (instance != null) {
 			instance = new EmailSender();
 		}
 		return instance;
@@ -68,123 +68,116 @@ public class EmailSender {
 
 	/**
 	 * Build email multipart and send it
+	 * 
 	 * @param email the email to send
 	 * @throws TemplateProcessingException if error during process
 	 * @return the javax.mail object sended
 	 */
-	public MimeMessage send(Email email) throws TemplateProcessingException {
+	public MimeMessage send(Email email) throws TemplateProcessingException, MessagingException {
 		Map<String, String> headers = email.getHeaders();
 		Map<String, String> attachements = email.getAttachements();
-		
+
 		// Create the message
 		Session session = Session.getInstance(EmailSender.config);
 		MimeMessage message = new MimeMessage(session) {
-			    @Override
-			    protected void updateMessageID() { } // Prevent MimeMessage from overwriting our Message-ID
+			@Override
+			protected void updateMessageID() {
+			} // Prevent MimeMessage from overwriting our Message-ID
 		};
 		Multipart multiPart = new MimeMultipart("alternative");
-		
-		try {
-			// insert in message object the fromTag if exist
-			if (headers.get(getProperty("fromTag")) != null) {
-				message.setFrom(new InternetAddress(headers
-						.get(getProperty("fromTag"))));
-			}
-			
-			if (getProperty("messageIdPrefix") != null) {
-				message.setHeader("Message-ID", getProperty("messageIdPrefix") + "-" + UUID.randomUUID().toString() + "@" + getProperty("messageIdSuffix"));
-			}
-			
-			// Insert into message dynamic header
-			Map<String,String> dynamicHeader = getSubProperty("headers");
-			Iterator<Entry<String, String>> itDynamicHeader = dynamicHeader.entrySet().iterator();
-			while (itDynamicHeader.hasNext()) {
-				Entry<String, String> entry = itDynamicHeader.next();
-				String headerName = entry.getKey().replace("headers.", "");
-				String headerValue = entry.getValue();
-				message.setHeader(headerName, headerValue);
-			}
-			
-			// insert in message object the toTag if exist
-			if (headers.get(getProperty("toTag")) != null) {
-				message.setRecipients(Message.RecipientType.TO, InternetAddress
-						.parse(headers.get(getProperty("toTag"))));
-			}
-			// insert in message object the ccTag if exist
-			if (headers.get(getProperty("ccTag")) != null) {
-				message.setRecipients(Message.RecipientType.CC, InternetAddress
-						.parse(headers.get(getProperty("ccTag"))));
-			}
-			// Get the subject template and process it to insert value from metadata 
-			String subjectTemplate = getProperty("mail.subject.format");
-			HTMLProcessor p = HTMLProcessorBuilder.getStringProcessor(
-					subjectTemplate, email, headers);
-			StringWriter strWriter = new StringWriter();
-			p.process("", new HashMap<String, Object>(), strWriter);
-			message.setSubject(subject(email));
 
-			// build the textPart of mail
-			MimeBodyPart textPart = new MimeBodyPart();
-			textPart.setText(bodyTxt(email), "utf-8");
-			multiPart.addBodyPart(textPart);
-
-			// build the htmlPart of mail
-			MimeBodyPart htmlPart = new MimeBodyPart();
-			StringWriter outHTMLContent = new StringWriter();
-			bodyHTML(email, outHTMLContent);
-			htmlPart.setContent(outHTMLContent.toString(),
-					"text/html; charset=utf-8");
-			multiPart.addBodyPart(htmlPart);
-			
-			// for each attachment get file and put it in mimeMessage
-			Iterator<Map.Entry<String, String>> it = attachements
-					.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<String, String> entry = it.next();
-				String filename = entry.getValue();
-				File f = new File(filename);
-				if(!f.exists()) {
-					f = new File(EmailSender.getProperty("template.base.path") + "/" +filename);
-				}
-				if ((f.exists()) && (!f.isDirectory())) {
-					MimeBodyPart messageBodyPart = new MimeBodyPart();
-					DataSource source = new javax.activation.FileDataSource(
-							f.getAbsolutePath());
-					messageBodyPart
-							.setDataHandler(new javax.activation.DataHandler(
-									source));
-					messageBodyPart.setFileName(Utils.basename(f));
-					messageBodyPart.setContentID(entry.getKey());
-					multiPart.addBodyPart(messageBodyPart);
-				} else {
-					logger.error("File not found : " + filename);
-				}
-			}
-			// build message
-			message.setContent(multiPart);
-			// send message 
-			if (!TxtToMail.testUnit) {
-				logger.info("Message sent : to=" + headers.get(getProperty("toTag")) + ", subject=" + headers.get(getProperty("subjectTag")));
-				javax.mail.Transport.send(message);
-			}
-			
-			return message;
-		} catch (MessagingException e) {
-			// in case of error
-			throw new TemplateProcessingException(e);
+		// insert in message object the fromTag if exist
+		if (headers.get(getProperty("fromTag")) != null) {
+			message.setFrom(new InternetAddress(headers.get(getProperty("fromTag"))));
 		}
+
+		if (getProperty("messageIdPrefix") != null) {
+			message.setHeader("Message-ID", getProperty("messageIdPrefix") + "-" + UUID.randomUUID().toString() + "@"
+					+ getProperty("messageIdSuffix"));
+		}
+
+		// Insert into message dynamic header
+		Map<String, String> dynamicHeader = getSubProperty("headers");
+		Iterator<Entry<String, String>> itDynamicHeader = dynamicHeader.entrySet().iterator();
+		while (itDynamicHeader.hasNext()) {
+			Entry<String, String> entry = itDynamicHeader.next();
+			String headerName = entry.getKey().replace("headers.", "");
+			String headerValue = entry.getValue();
+			message.setHeader(headerName, headerValue);
+		}
+
+		// insert in message object the toTag if exist
+		if (headers.get(getProperty("toTag")) != null) {
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(headers.get(getProperty("toTag"))));
+		}
+		// insert in message object the ccTag if exist
+		if (headers.get(getProperty("ccTag")) != null) {
+			message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(headers.get(getProperty("ccTag"))));
+		}
+		// Get the subject template and process it to insert value from metadata
+		String subjectTemplate = getProperty("mail.subject.format");
+		HTMLProcessor p = HTMLProcessorBuilder.getStringProcessor(subjectTemplate, email, headers);
+		StringWriter strWriter = new StringWriter();
+		p.process("", new HashMap<String, Object>(), strWriter);
+		message.setSubject(subject(email));
+
+		// build the textPart of mail
+		MimeBodyPart textPart = new MimeBodyPart();
+		textPart.setText(bodyTxt(email), "utf-8");
+		multiPart.addBodyPart(textPart);
+
+		// build the htmlPart of mail
+		MimeBodyPart htmlPart = new MimeBodyPart();
+		StringWriter outHTMLContent = new StringWriter();
+		bodyHTML(email, outHTMLContent);
+		htmlPart.setContent(outHTMLContent.toString(), "text/html; charset=utf-8");
+		multiPart.addBodyPart(htmlPart);
+
+		// for each attachment get file and put it in mimeMessage
+		Iterator<Map.Entry<String, String>> it = attachements.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, String> entry = it.next();
+			String filename = entry.getValue();
+			File f = new File(filename);
+			if (!f.exists()) {
+				f = new File(EmailSender.getProperty("template.base.path") + "/" + filename);
+			}
+			if ((f.exists()) && (!f.isDirectory())) {
+				MimeBodyPart messageBodyPart = new MimeBodyPart();
+				DataSource source = new javax.activation.FileDataSource(f.getAbsolutePath());
+				messageBodyPart.setDataHandler(new javax.activation.DataHandler(source));
+				messageBodyPart.setFileName(Utils.basename(f));
+				messageBodyPart.setContentID(entry.getKey());
+				multiPart.addBodyPart(messageBodyPart);
+			} else {
+				logger.error("File not found : " + filename);
+			}
+		}
+		// build message
+		message.setContent(multiPart);
+		// send message
+		if (!TxtToMail.testUnit) {
+			logger.info("Message sent : to=" + headers.get(getProperty("toTag")) + ", subject="
+					+ headers.get(getProperty("subjectTag")));
+			javax.mail.Transport.send(message);
+		}
+
+		return message;
 	}
 
 	/**
 	 * This method return property value from key
+	 * 
 	 * @param key the key to find property
 	 * @return the value of property
-	 * @throws TemplateProcessingException if key not found in properties throw TemplateProcessingException
+	 * @throws TemplateProcessingException if key not found in properties throw
+	 *                                     TemplateProcessingException
 	 */
 	public static String getProperty(String key) throws TemplateProcessingException {
 		// case when config is null
-		if(config == null) {
-			throw new TemplateProcessingException("Unable to find key '" + key + "' in properties, no properties set in Email singleton, please call Email.setConfig before use getProperty");
+		if (config == null) {
+			throw new TemplateProcessingException("Unable to find key '" + key
+					+ "' in properties, no properties set in Email singleton, please call Email.setConfig before use getProperty");
 		}
 		// get val from key
 		String val = config.getProperty(key);
@@ -194,60 +187,61 @@ public class EmailSender {
 		}
 		return val;
 	}
-	
-	public static Map<String,String> getSubProperty(String key) throws TemplateProcessingException {
-		if(config == null) {
-			throw new TemplateProcessingException("Unable to find key '" + key + "' in properties, no properties set in Email singleton, please call Email.setConfig before use getProperty");
+
+	public static Map<String, String> getSubProperty(String key) throws TemplateProcessingException {
+		if (config == null) {
+			throw new TemplateProcessingException("Unable to find key '" + key
+					+ "' in properties, no properties set in Email singleton, please call Email.setConfig before use getProperty");
 		}
-		Map<String,String> map = new HashMap<String,String>();
-		for (Enumeration<?> e = config.propertyNames(); e.hasMoreElements(); ) {
-			String name = (String)e.nextElement();
-		    String value = getProperty(name);
-		    if (name.startsWith(key)) {
-		    	map.put(name, value);
-		    }
+		Map<String, String> map = new HashMap<String, String>();
+		for (Enumeration<?> e = config.propertyNames(); e.hasMoreElements();) {
+			String name = (String) e.nextElement();
+			String value = getProperty(name);
+			if (name.startsWith(key)) {
+				map.put(name, value);
+			}
 		}
 		return map;
 	}
-	
 
 	/**
 	 * Return an HTML String for HTML Part of email
-	 * @param email 
-	 * @param out an optional writer to output email
+	 * 
+	 * @param email
+	 * @param out   an optional writer to output email
 	 * @return
 	 * @throws TemplateProcessingException
 	 */
 	String bodyHTML(Email email, Writer out) throws TemplateProcessingException {
 		// writer header
-		HTMLProcessor headerProcessor = HTMLProcessorBuilder
-				.getTemplateProcessor("head", email, EmailSender.config, email.getHeaders());
+		HTMLProcessor headerProcessor = HTMLProcessorBuilder.getTemplateProcessor("head", email, EmailSender.config,
+				email.getHeaders());
 		headerProcessor.process("", new HashMap<String, Object>(), out);
-		
+
 		// for each line
 		for (int i = 0; i < email.getBody().size(); i++) {
 			String line = email.getBody().get(i);
 			String tag = Utils.getTag(line);
-			Map<String,Object> mapExtrat = new HashMap<String, Object>();
-			// if not the last 
+			Map<String, Object> mapExtrat = new HashMap<String, Object>();
+			// if not the last
 			if (i < email.getBody().size() - 1) {
-				String nextTag = Utils.getTag(email.getBody().get(i+1));
+				String nextTag = Utils.getTag(email.getBody().get(i + 1));
 				mapExtrat.put("nextTag", nextTag);
 			}
 			// if not the firts
 			if (i > 0) {
-				String previusTag = Utils.getTag(email.getBody().get(i-1));
+				String previusTag = Utils.getTag(email.getBody().get(i - 1));
 				mapExtrat.put("previusTag", previusTag);
 			}
 			// process
-			HTMLProcessor p = HTMLProcessorBuilder.getTemplateProcessor("tag."
-					+ tag, email, EmailSender.config, email.getHeaders());
+			HTMLProcessor p = HTMLProcessorBuilder.getTemplateProcessor("tag." + tag, email, EmailSender.config,
+					email.getHeaders());
 			p.process(Utils.getValue(line), mapExtrat, out);
 		}
 
 		// write footer
-		HTMLProcessor footerProcessor = HTMLProcessorBuilder
-				.getTemplateProcessor("foot", email, EmailSender.config, email.getHeaders());
+		HTMLProcessor footerProcessor = HTMLProcessorBuilder.getTemplateProcessor("foot", email, EmailSender.config,
+				email.getHeaders());
 		footerProcessor.process("", new HashMap<String, Object>(), out);
 
 		return out.toString();
@@ -255,7 +249,8 @@ public class EmailSender {
 
 	/**
 	 * For each line format BODY part using the appropriate TextProcessor
-	 * @param email 
+	 * 
+	 * @param email
 	 * @return the textPart of Email
 	 * @throws TemplateProcessingException if error while process a line
 	 */
@@ -269,27 +264,23 @@ public class EmailSender {
 		return out.toString();
 	}
 
-	
 	/**
 	 * Search in property to find the textProcessor for a TAG
+	 * 
 	 * @param tag the TAG part of line
 	 * @return the TextProcessor to use
 	 * @throws TemplateProcessingException if no TextProcessor was found
 	 */
-	private TextProcessor getTextProcessor(String tag)
-			throws TemplateProcessingException {
+	private TextProcessor getTextProcessor(String tag) throws TemplateProcessingException {
 		TextProcessor p;
 		if (EmailSender.config.getProperty("tag." + tag + ".text") == null) {
 			p = TextProcessorBuilder.getDefaultProcessor();
 		} else {
-			p = TextProcessorBuilder.getProcessor(getProperty("tag." + tag
-					+ ".text"));
+			p = TextProcessorBuilder.getProcessor(getProperty("tag." + tag + ".text"));
 		}
 		if (p == null) {
-			throw new TemplateProcessingException(
-					"Unable to find TextProcessor for tag : '" + tag
-							+ "'. Please, check tag." + tag
-							+ ".text in properties file");
+			throw new TemplateProcessingException("Unable to find TextProcessor for tag : '" + tag
+					+ "'. Please, check tag." + tag + ".text in properties file");
 		}
 		return p;
 	}
@@ -299,10 +290,9 @@ public class EmailSender {
 	}
 
 	public String subject(Email email) throws TemplateProcessingException {
-		// Get the subject template and process it to insert value from metadata 
+		// Get the subject template and process it to insert value from metadata
 		String subjectTemplate = getProperty("mail.subject.format");
-		HTMLProcessor p = HTMLProcessorBuilder.getStringProcessor(
-			subjectTemplate, email, email.getHeaders());
+		HTMLProcessor p = HTMLProcessorBuilder.getStringProcessor(subjectTemplate, email, email.getHeaders());
 		StringWriter strWriter = new StringWriter();
 		p.process("", new HashMap<String, Object>(), strWriter);
 		return strWriter.toString();
