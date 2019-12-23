@@ -1,6 +1,7 @@
 package info.kapable.utils.txttomail.domain;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.UUID;
 import info.kapable.utils.txttomail.EmailSender;
 import info.kapable.utils.txttomail.Utils;
 import info.kapable.utils.txttomail.exception.TemplateProcessingException;
+import info.kapable.utils.txttomail.htmlprocessor.freemarkerExt.ImageHandle;
 
 /**
  * Email is a object to <br>
@@ -51,8 +53,10 @@ public class Email {
 	 * 
 	 * @param line the line to parse
 	 * @throws TemplateProcessingException this exception is throw when getProperty throw it
+	 * @throws IOException 
 	 */
-	public void convert(String line) throws TemplateProcessingException {
+	@SuppressWarnings("unlikely-arg-type")
+	public void convert(String line) throws TemplateProcessingException, IOException {
 		// Get tag and value from line
 		String tag = Utils.getTag(line);
 		String value = Utils.getValue(line);
@@ -65,16 +69,22 @@ public class Email {
 			this.addAttachement(value);
 		// else add to body (some array, image, text)
 		} else if (EmailSender.getProperty("imageTag").equals(tag)) {
+			String key = value;
 			File file = new File(value);
 			if (!file.exists()) {
 				value = EmailSender.getConfig()
 						.getProperty("template.base.path")
 						+ File.separator + value;
 			}
-
-			// put file in attachment
-			String key = this.addAttachement(value);
-			this.body.add(tag + ":" + key);
+			Integer mode = Integer.parseInt(EmailSender.getProperty("imageMode"));
+			if(mode.equals(ImageHandle.ATTACHED_MODE)) {	
+				// put file in attachment
+				key = this.addAttachement(value);
+			}
+			if(mode.equals(ImageHandle.EMBEDED_MODE)) {
+				key = new ImageHandle().returnEmbedding(value);
+			}
+			this.body.add(tag + ":" + key);		
 		} else {
 			this.body.add(line);
 		}

@@ -1,3 +1,3 @@
 <p>
-<img style="width: 70%;" src="cid:${line}" />
+	<img style="width: 70%;" src="${line}" />
 </p>

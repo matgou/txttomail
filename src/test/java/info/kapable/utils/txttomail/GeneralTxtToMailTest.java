@@ -2,6 +2,7 @@ package info.kapable.utils.txttomail;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.mail.MessagingException;
@@ -42,7 +43,7 @@ public class GeneralTxtToMailTest {
 	}
 	@Test
 	public void testAllInOneComand() {
-		String args[] = {"--send", "-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
+		String args[] = {"--send", "-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!", "-IMAGE", "./src/main/resources/templates/Logo.png", "--output", "allinone.eml"};
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(args);
 		
@@ -56,6 +57,13 @@ public class GeneralTxtToMailTest {
 			Multipart multipart = (Multipart) email.getContent();
 			// With Attachment multipart count must more than 2
 			assertTrue(multipart.getCount() >= 2);
+			for(int i=0; i<multipart.getCount(); i++) {
+				String className = multipart.getBodyPart(i).getContent().getClass().toString();
+				System.out.println(className);
+				if(multipart.getBodyPart(i).getContent().getClass().equals(String.class)) {
+					System.out.println((String) multipart.getBodyPart(i).getContent());
+				}
+			}
 		} catch (IOException e) {
 			assertTrue(false);
 		} catch (MessagingException e) {
@@ -67,6 +75,9 @@ public class GeneralTxtToMailTest {
 	 * Test REAMDE
 	 */
 	public void testMain() {
+		File f = new File("mail.template");
+		f.delete();
+		
 		// Emulate : java -jar TxtToMail.jar -i mail.template -FROM matgou@kapable.info
 		String[] argsFROM = {"-i", "mail.template","-FROM", "matgou@kapable.info"};
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
@@ -104,7 +115,7 @@ public class GeneralTxtToMailTest {
 		info.kapable.utils.txttomail.TxtToMail.main(argsPJ);
 
 		// Emulate : java -jar TxtToMail.jar -i mail.template -IMG "Logo.png"
-		String[] argsIMG = {"-i", "mail.template","-IMG", "Logo.png"};
+		String[] argsIMG = {"-i", "mail.template","-IMAGE", "Logo.png"};
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsIMG);
 		
