@@ -57,7 +57,7 @@ public class ImageHandle implements TemplateMethodModelEx {
 	
 	public String returnEmbedding(String fileName)
 			throws IOException {
-		if(fileName.startsWith("data:image/png;base64")) {
+		if(fileName.contains("data:image/png;base64")) {
 			return fileName;
 		}
 		File file = new File(fileName);
