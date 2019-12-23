@@ -3,6 +3,9 @@ package info.kapable.utils.txttomail;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.mail.MessagingException;
@@ -21,32 +24,39 @@ public class GeneralTxtToMailTest {
 
 	@Test
 	public void testInvalidSyntax() {
-		String argsWithoutInput[] = {"-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
+		String argsWithoutInput[] = { "-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT",
+				"Hy, <br/> This is a test mail!" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsWithoutInput);
 		assertTrue(TxtToMail.rc != 0);
-		
-		String argsSendWithoutTo[] = {"-send", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
+
+		String argsSendWithoutTo[] = { "-send", "-SUBJECT", "this is a test", "-TEXT",
+				"Hy, <br/> This is a test mail!" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsSendWithoutTo);
 		assertTrue(TxtToMail.rc != 0);
-		
-		String argsSendNotAnEmail[] = {"--send", "-TO", "not an email", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!"};
+
+		String argsSendNotAnEmail[] = { "--send", "-TO", "not an email", "-SUBJECT", "this is a test", "-TEXT",
+				"Hy, <br/> This is a test mail!" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsSendNotAnEmail);
 		assertTrue(TxtToMail.rc != 0);
 
-		String argsSendWithNotExistantTagl[] = {"--send", "-TO", "not an email", "-SUBJECT", "this is a test", "-NOEXISTANTTAG", "Hy, <br/> This is a test mail!"};
+		String argsSendWithNotExistantTagl[] = { "--send", "-TO", "not an email", "-SUBJECT", "this is a test",
+				"-NOEXISTANTTAG", "Hy, <br/> This is a test mail!" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsSendWithNotExistantTagl);
 		assertTrue(TxtToMail.rc != 0);
 	}
+
 	@Test
 	public void testAllInOneComand() {
-		String args[] = {"--send", "-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT", "Hy, <br/> This is a test mail!", "-IMAGE", "./src/main/resources/templates/Logo.png", "--output", "allinone.eml"};
+		String args[] = { "--send", "-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT",
+				"Hy, <br/> This is a test mail!", "-IMAGE", "./src/main/resources/templates/Logo.png", "--output",
+				"allinone.eml" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(args);
-		
+
 		// Do some check
 		MimeMessage email = info.kapable.utils.txttomail.TxtToMail.getMimeMessage();
 		assertTrue(email != null);
@@ -57,10 +67,10 @@ public class GeneralTxtToMailTest {
 			Multipart multipart = (Multipart) email.getContent();
 			// With Attachment multipart count must more than 2
 			assertTrue(multipart.getCount() >= 2);
-			for(int i=0; i<multipart.getCount(); i++) {
+			for (int i = 0; i < multipart.getCount(); i++) {
 				String className = multipart.getBodyPart(i).getContent().getClass().toString();
 				System.out.println(className);
-				if(multipart.getBodyPart(i).getContent().getClass().equals(String.class)) {
+				if (multipart.getBodyPart(i).getContent().getClass().equals(String.class)) {
 					System.out.println((String) multipart.getBodyPart(i).getContent());
 				}
 			}
@@ -70,6 +80,47 @@ public class GeneralTxtToMailTest {
 			assertTrue(false);
 		}
 	}
+
+	@Test
+	public void testEmbededImage() {
+
+		try {
+			File f = new File("embededImagemail.template");
+			f.delete();
+
+			FileWriter fw = new FileWriter(f);
+			fw.write("SUBJECT:This is a test\n");
+			fw.write("TO:test@kapable.info\n");
+			fw.write("FROM:matgou@kapable.info\n");
+			fw.write("IMAGE:src/main/resources/templates/Logo.png\n");
+			fw.write("TEXT:Hello Mathieu\n");
+			fw.write("TEXT:Hy, <br/>\n");
+			fw.write("TEXT:This is a test mail !\n");
+			fw.write("CSV:src/main/resources/tab1.csv\n");
+			fw.flush();
+			fw.close();
+
+			String[] argsFROM = { "-i", "embededImagemail.template", "--html", "embededImagemail.html", "--send" };
+			info.kapable.utils.txttomail.TxtToMail.testUnit = true;
+			info.kapable.utils.txttomail.TxtToMail.main(argsFROM);
+
+			FileInputStream fis = new FileInputStream("embededImagemail.html");
+			byte[] buffer = new byte[10];
+			StringBuilder sb = new StringBuilder();
+			while (fis.read(buffer) != -1) {
+				sb.append(new String(buffer));
+				buffer = new byte[10];
+			}
+			fis.close();
+
+			String HTMLContent = sb.toString();
+			assertTrue(HTMLContent.contains("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKCAYAAAB7KRYFAA"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
+
 	@Test
 	/**
 	 * Test REAMDE
@@ -77,52 +128,54 @@ public class GeneralTxtToMailTest {
 	public void testMain() {
 		File f = new File("mail.template");
 		f.delete();
-		
+
 		// Emulate : java -jar TxtToMail.jar -i mail.template -FROM matgou@kapable.info
-		String[] argsFROM = {"-i", "mail.template","-FROM", "matgou@kapable.info"};
+		String[] argsFROM = { "-i", "mail.template", "-FROM", "matgou@kapable.info" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsFROM);
-		
+
 		// Emulate : java -jar TxtToMail.jar -i mail.template -TO test@kapable.info
-		String[] argsTO = {"-i", "mail.template","-TO", "test@kapable.info"};
+		String[] argsTO = { "-i", "mail.template", "-TO", "test@kapable.info" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsTO);
-		
+
 		// Emulate : java -jar TxtToMail.jar -i mail.template -SUBJECT "This is a test"
-		String[] argsSUBJECT = {"-i", "mail.template","-SUBJECT", "This is a test"};
+		String[] argsSUBJECT = { "-i", "mail.template", "-SUBJECT", "This is a test" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsSUBJECT);
-		
+
 		// Emulate : java -jar TxtToMail.jar -i mail.template -TEXT "Hy, <br/>"
-		String[] argsTEXT1 = {"-i", "mail.template","-TEXT", "Hy, <br/>"};
+		String[] argsTEXT1 = { "-i", "mail.template", "-TEXT", "Hy, <br/>" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsTEXT1);
-		
-		// Emulate : java -jar TxtToMail.jar -i mail.template -TEXT "This is a test mail !"
-		String[] argsTEXT2 = {"-i", "mail.template","-TEXT", "This is a test mail !"};
+
+		// Emulate : java -jar TxtToMail.jar -i mail.template -TEXT "This is a test mail
+		// !"
+		String[] argsTEXT2 = { "-i", "mail.template", "-TEXT", "This is a test mail !" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsTEXT2);
-		
 
-		// Emulate : java -jar TxtToMail.jar -i mail.template -CSV "src/main/resources/tab1.csv"
-		String[] argsCSV = {"-i", "mail.template","-CSV", "src/main/resources/tab1.csv"};
+		// Emulate : java -jar TxtToMail.jar -i mail.template -CSV
+		// "src/main/resources/tab1.csv"
+		String[] argsCSV = { "-i", "mail.template", "-CSV", "src/main/resources/tab1.csv" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsCSV);
-		
-		// Emulate : java -jar TxtToMail.jar -i mail.template -PJ "src/main/resources/tab1.csv"
-		String[] argsPJ = {"-i", "mail.template","-PJ", "src/main/resources/tab1.csv"};
+
+		// Emulate : java -jar TxtToMail.jar -i mail.template -PJ
+		// "src/main/resources/tab1.csv"
+		String[] argsPJ = { "-i", "mail.template", "-PJ", "src/main/resources/tab1.csv" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsPJ);
 
 		// Emulate : java -jar TxtToMail.jar -i mail.template -IMG "Logo.png"
-		String[] argsIMG = {"-i", "mail.template","-IMAGE", "Logo.png"};
+		String[] argsIMG = { "-i", "mail.template", "-IMAGE", "Logo.png" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsIMG);
-		
+
 		// Emulate java -jar TxtToMail.jar -i mail.template -o output.eml -send
-		String[] argsSend = {"-i", "mail.template", "-o", "output.eml", "-send"};
+		String[] argsSend = { "-i", "mail.template", "-o", "output.eml", "-send" };
 		info.kapable.utils.txttomail.TxtToMail.main(argsSend);
-		
+
 		// Do some check
 		MimeMessage email = info.kapable.utils.txttomail.TxtToMail.getMimeMessage();
 		assertTrue(email != null);
