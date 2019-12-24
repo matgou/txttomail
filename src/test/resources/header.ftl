@@ -25,7 +25,7 @@
           <tr style="height: 90.95pt;">
             <td style="border: medium none ; padding: 0cm; width: 377.15pt; height: 60pt;">
             <p class="MsoNormal" style="margin-bottom: 3pt;"><b><span style="font-size: 20pt; font-family: &quot;Calibri&quot;,sans-serif;"><span
- style="color: ${TYPE_COLOR}">${headers["TYPE"]} :</span><span style="color: white;"> ${SUBJECT}</span>
+ style="color: ${TYPE_COLOR}">${headers["TYPE"]} :</span><span style="color: white;">${headers["SUBJECT"]}</span>
  				
  			<o:p></o:p></span></b></p>
             <p class="MsoNormal" style="margin-bottom: 3pt;"><b style=""><span style="font-family: &quot;Calibri&quot;,sans-serif; color: white;"><span style="color: black;">Date : </span></span></b><span style="color: white;">

@@ -4,9 +4,16 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import org.apache.commons.io.FileUtils;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -83,28 +90,64 @@ public class GeneralTxtToMailTest {
 
 	@Test
 	public void testEmbededImage() {
+		String tempDir = "target/JunitTemp";
+		String filePrefix = "embededImagemail";
+		File dTemp = new File(tempDir);
+		File fTemplate = new File(tempDir + "/" + filePrefix + ".template");
+		File fConfig = new File(tempDir + "/" + filePrefix + ".properties");
+		File fTemplateHeader = new File(tempDir + "/" + filePrefix + ".header.ftl");
+		File fTemplateFooter = new File(tempDir + "/" + filePrefix + ".footer.ftl");
 
-		File f = new File("embededImagemail.template");
 		try {
-			f.delete();
+			try {
+				FileUtils.deleteDirectory(dTemp);
+			} catch (NoSuchFileException e) {
+				e.printStackTrace();
+			}
+			Files.createDirectory(dTemp.toPath());
 
-			FileWriter fw = new FileWriter(f);
-			fw.write("SUBJECT:This is a test\n");
-			fw.write("TO:test@kapable.info\n");
-			fw.write("FROM:matgou@kapable.info\n");
-			fw.write("IMAGE:src/test/resources/checkbox-circle-fill.svg\n");
-			fw.write("TEXT:Hello Mathieu\n");
-			fw.write("TEXT:Hy, <br/>\n");
-			fw.write("TEXT:This is a test mail !\n");
-			fw.write("CSV:src/main/resources/tab1.csv\n");
-			fw.flush();
-			fw.close();
+			FileWriter fwTemplate = new FileWriter(fTemplate);
+			FileWriter fwConfig = new FileWriter(fConfig);
+			OutputStream fwTemplateHeader = new FileOutputStream(fTemplateHeader);
+			OutputStream fwTemplateFooter = new FileOutputStream(fTemplateFooter);
+			
+			// Create Properties file
+			fwConfig.write("mail.smtp.host=smtp.orange.fr\n");
+			fwConfig.write("logfile=" + tempDir + "/" + filePrefix + ".log\n");
+			fwConfig.write("head.html.template=" + filePrefix + ".header.ftl\n");
+			fwConfig.write("foot.html.template=" + filePrefix + ".footer.ftl\n");
+			fwConfig.write("template.base.path=" + tempDir + "\n");
+			fwConfig.flush();
+			fwConfig.close();
 
-			String[] argsFROM = { "-i", "embededImagemail.template", "--html", "embededImagemail.html", "--send" };
+			fwTemplate.write("SUBJECT:This is a test\n");
+			fwTemplate.write("TYPE:INFO\n");
+			fwTemplate.write("TO:test@kapable.info\n");
+			fwTemplate.write("FROM:matgou@kapable.info\n");
+			fwTemplate.write("TEXT:Hello Mathieu\n");
+			fwTemplate.write("TEXT:Hy, <br/>\n");
+			fwTemplate.write("TEXT:This is a test mail !\n");
+			fwTemplate.write("IMAGE:src/test/resources/checkbox-circle-fill.svg\n");
+			fwTemplate.write("CSV:src/main/resources/tab1.csv\n");
+			fwTemplate.flush();
+			fwTemplate.close();
+			
+			Path header = new File("src/test/resources/header.ftl").toPath();
+			Files.copy(header , fwTemplateHeader);
+			fwTemplateHeader.flush();
+			fwTemplateHeader.close();
+			
+			Path footer = new File("src/test/resources/footer.ftl").toPath();
+			Files.copy(footer , fwTemplateFooter);
+			fwTemplateFooter.flush();
+			fwTemplateFooter.close();
+			
+			
+			String[] argsFROM = { "-i", tempDir + "/" + filePrefix + ".template", "--html", tempDir + "/" + filePrefix + ".html", "--send" };
 			info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 			info.kapable.utils.txttomail.TxtToMail.main(argsFROM);
 
-			FileInputStream fis = new FileInputStream("embededImagemail.html");
+			FileInputStream fis = new FileInputStream(tempDir + "/" + filePrefix + ".html");
 			byte[] buffer = new byte[10];
 			StringBuilder sb = new StringBuilder();
 			while (fis.read(buffer) != -1) {
@@ -114,19 +157,16 @@ public class GeneralTxtToMailTest {
 			fis.close();
 
 			String HTMLContent = sb.toString();
+			System.out.println("HTML = " + HTMLContent);
 			assertTrue(HTMLContent.contains("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			assertTrue(false);
-			f.delete();
 		}
-
-		f.delete();
 	}
 
 	@Test
-	/**
-	 * Test REAMDE
+	/**fTemplate REAMDE
 	 */
 	public void testMain() {
 		File f = new File("mail.template");
