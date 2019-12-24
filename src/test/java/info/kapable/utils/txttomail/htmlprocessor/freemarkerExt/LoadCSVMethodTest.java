@@ -13,7 +13,7 @@ public class LoadCSVMethodTest {
 	@Test
 	public void test() {
 		LoadCSVMethod csv = new LoadCSVMethod();
-		List<String[]> result = (List<String[]>) csv.exec("src/main/resources/tab1.csv");
+		List<String[]> result = (List<String[]>) csv.exec("src/test/resources/tab1.csv");
 		assertTrue(result.size() > 1);
 		assertTrue(result.get(0)[0].length() > 0);
 	}

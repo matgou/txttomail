@@ -117,18 +117,19 @@ public class GeneralTxtToMailTest {
 			fwConfig.write("head.html.template=" + filePrefix + ".header.ftl\n");
 			fwConfig.write("foot.html.template=" + filePrefix + ".footer.ftl\n");
 			fwConfig.write("template.base.path=" + tempDir + "\n");
+			fwConfig.write("mail.subject.format=[${headers[\"TYPE\"]}] ${headers[\"SUBJECT\"]}\n");
 			fwConfig.flush();
 			fwConfig.close();
 
 			fwTemplate.write("SUBJECT:This is a test\n");
 			fwTemplate.write("TYPE:INFO\n");
-			fwTemplate.write("TO:test@kapable.info\n");
+			fwTemplate.write("TO:matgou@kapable.info\n");
 			fwTemplate.write("FROM:matgou@kapable.info\n");
 			fwTemplate.write("TEXT:Hello Mathieu\n");
 			fwTemplate.write("TEXT:Hy, <br/>\n");
 			fwTemplate.write("TEXT:This is a test mail !\n");
 			fwTemplate.write("IMAGE:src/test/resources/checkbox-circle-fill.svg\n");
-			fwTemplate.write("CSV:src/main/resources/tab1.csv\n");
+			fwTemplate.write("ARRAY:src/test/resources/tab1.csv\n");
 			fwTemplate.flush();
 			fwTemplate.close();
 			
@@ -146,7 +147,8 @@ public class GeneralTxtToMailTest {
 			String[] argsFROM = { "-c", tempDir + "/" + filePrefix + ".properties", "-i", tempDir + "/" + filePrefix + ".template", "--html", tempDir + "/" + filePrefix + ".html", "--send" };
 			info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 			info.kapable.utils.txttomail.TxtToMail.main(argsFROM);
-
+			MimeMessage email = info.kapable.utils.txttomail.TxtToMail.getMimeMessage();
+			
 			FileInputStream fis = new FileInputStream(tempDir + "/" + filePrefix + ".html");
 			byte[] buffer = new byte[10];
 			StringBuilder sb = new StringBuilder();
@@ -160,7 +162,12 @@ public class GeneralTxtToMailTest {
 			System.out.println("HTML = " + HTMLContent);
 			assertTrue(HTMLContent.contains("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+CiAgICA8Zz4KICAgICAgICA8cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDB6Ii8+CiAgICAgICAgPHBhdGggZD0iTTEyIDIyQzYuNDc3IDIyIDIgMTcuNTIzIDIgMTJTNi40NzcgMiAxMiAyczEwIDQuNDc3IDEwIDEwLTQuNDc3IDEwLTEwIDEwem0tLjk5Ny02bDcuMDctNy4wNzEtMS40MTQtMS40MTQtNS42NTYgNS42NTctMi44MjktMi44MjktMS40MTQgMS40MTRMMTEuMDAzIDE2eiIvPgogICAgPC9nPgo8L3N2Zz4K"));
 			assertTrue(HTMLContent.contains("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+CiAgICA8Zz4KICAgICAgICA8cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDB6Ii8+CiAgICAgICAgPHBhdGggZD0iTTEyLjg2NiAzbDkuNTI2IDE2LjVhMSAxIDAgMCAxLS44NjYgMS41SDIuNDc0YTEgMSAwIDAgMS0uODY2LTEuNUwxMS4xMzQgM2ExIDEgMCAwIDEgMS43MzIgMHpNMTEgMTZ2Mmgydi0yaC0yem0wLTd2NWgyVjloLTJ6Ii8+CiAgICA8L2c+Cjwvc3ZnPgo="));
+			String subject = email.getSubject();
+			assertTrue(subject.contentEquals("[INFO] This is a test"));
 		} catch (IOException e) {
+			e.printStackTrace();
+			assertTrue(false);
+		} catch (MessagingException e) {
 			e.printStackTrace();
 			assertTrue(false);
 		}
@@ -207,7 +214,7 @@ public class GeneralTxtToMailTest {
 
 		// Emulate : java -jar TxtToMail.jar -i mail.template -PJ
 		// "src/main/resources/tab1.csv"
-		String[] argsPJ = { "-i", "mail.template", "-PJ", "src/main/resources/tab1.csv" };
+		String[] argsPJ = { "-i", "mail.template", "-PJ", "src/test/resources/tab1.csv" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsPJ);
 
