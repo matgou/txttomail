@@ -18,7 +18,7 @@
  border="0" cellpadding="0" cellspacing="0">
   <tbody>
     <tr>
-      <td style="width: 176px;"><img style="width: 70px; height: 70px;" src="${u.image('Logo.png')}"></td>
+      <td style="width: 176px;"><img style="width: 70px; height: 70px;" src="${u.image('src/test/resources/alert-fill.svg')}"></td>
       <td style="width: 100%; margin-left: 20px;">
       <table class="MsoNormalTable" style="border: medium none ; border-collapse: collapse; width: 100%;" border="0" cellpadding="0" cellspacing="0">
         <tbody>

@@ -143,7 +143,7 @@ public class GeneralTxtToMailTest {
 			fwTemplateFooter.close();
 			
 			
-			String[] argsFROM = { "-i", tempDir + "/" + filePrefix + ".template", "--html", tempDir + "/" + filePrefix + ".html", "--send" };
+			String[] argsFROM = { "-c", tempDir + "/" + filePrefix + ".properties", "-i", tempDir + "/" + filePrefix + ".template", "--html", tempDir + "/" + filePrefix + ".html", "--send" };
 			info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 			info.kapable.utils.txttomail.TxtToMail.main(argsFROM);
 
