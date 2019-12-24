@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.List;
 
@@ -57,15 +58,15 @@ public class ImageHandle implements TemplateMethodModelEx {
 	
 	public String returnEmbedding(String fileName)
 			throws IOException {
-		if(fileName.contains("data:image/png;base64")) {
+		if(fileName.contains("data:")) {
 			return fileName;
 		}
 		File file = new File(fileName);
 		byte[] bytes = loadFile(file);
 		byte[] encoded = Base64.getEncoder().encode(bytes);
 		String encodedString = new String(encoded);
-
-		return "data:image/png;base64," + encodedString;
+	    String mimeType = Files.probeContentType(file.toPath());
+		return "data:" + mimeType + ";base64," + encodedString;
 	}
 
 	private static byte[] loadFile(File file) throws IOException {

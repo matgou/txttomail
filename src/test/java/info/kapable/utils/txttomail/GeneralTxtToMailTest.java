@@ -52,7 +52,7 @@ public class GeneralTxtToMailTest {
 	@Test
 	public void testAllInOneComand() {
 		String args[] = { "--send", "-TO", "matgou@kapable.info", "-SUBJECT", "this is a test", "-TEXT",
-				"Hy, <br/> This is a test mail!", "-IMAGE", "./src/main/resources/templates/Logo.png", "--output",
+				"Hy, <br/> This is a test mail!", "-IMAGE", "./src/test/resources/notification-badge-fill.svg", "--output",
 				"allinone.eml" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(args);
@@ -84,15 +84,15 @@ public class GeneralTxtToMailTest {
 	@Test
 	public void testEmbededImage() {
 
+		File f = new File("embededImagemail.template");
 		try {
-			File f = new File("embededImagemail.template");
 			f.delete();
 
 			FileWriter fw = new FileWriter(f);
 			fw.write("SUBJECT:This is a test\n");
 			fw.write("TO:test@kapable.info\n");
 			fw.write("FROM:matgou@kapable.info\n");
-			fw.write("IMAGE:src/main/resources/templates/Logo.png\n");
+			fw.write("IMAGE:src/test/resources/checkbox-circle-fill.svg\n");
 			fw.write("TEXT:Hello Mathieu\n");
 			fw.write("TEXT:Hy, <br/>\n");
 			fw.write("TEXT:This is a test mail !\n");
@@ -114,11 +114,14 @@ public class GeneralTxtToMailTest {
 			fis.close();
 
 			String HTMLContent = sb.toString();
-			assertTrue(HTMLContent.contains("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKCAYAAAB7KRYFAA"));
+			assertTrue(HTMLContent.contains("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			assertTrue(false);
+			f.delete();
 		}
+
+		f.delete();
 	}
 
 	@Test
@@ -168,7 +171,7 @@ public class GeneralTxtToMailTest {
 		info.kapable.utils.txttomail.TxtToMail.main(argsPJ);
 
 		// Emulate : java -jar TxtToMail.jar -i mail.template -IMG "Logo.png"
-		String[] argsIMG = { "-i", "mail.template", "-IMAGE", "Logo.png" };
+		String[] argsIMG = { "-i", "mail.template", "-IMAGE", "src/test/resources/notification-badge-fill.svg" };
 		info.kapable.utils.txttomail.TxtToMail.testUnit = true;
 		info.kapable.utils.txttomail.TxtToMail.main(argsIMG);
 
