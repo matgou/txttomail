@@ -77,13 +77,8 @@ public class Email {
 						+ File.separator + value;
 			}
 			Integer mode = Integer.parseInt(EmailSender.getProperty("imageMode"));
-			if(mode.equals(ImageHandle.ATTACHED_MODE)) {	
-				// put file in attachment
-				key = this.addAttachement(value);
-			}
-			if(mode.equals(ImageHandle.EMBEDED_MODE)) {
-				key = new ImageHandle().returnEmbedding(value);
-			}
+			key = new ImageHandle(mode).returnImageHash(value);
+			
 			this.body.add(tag + ":" + key);		
 		} else {
 			this.body.add(line);

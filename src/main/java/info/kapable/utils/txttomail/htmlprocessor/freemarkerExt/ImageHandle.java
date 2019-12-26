@@ -22,13 +22,15 @@ public class ImageHandle implements TemplateMethodModelEx {
 	private Email email;
 	private int mode = EMBEDED_MODE;
 	
-	public ImageHandle(Email email) {
+	public ImageHandle(Email email, int mode) {
 		super();
 		this.email = email;
+		this.mode = mode;
 	}
 
-	public ImageHandle() {
+	public ImageHandle(int mode) {
 		super();
+		this.mode = mode;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -38,6 +40,10 @@ public class ImageHandle implements TemplateMethodModelEx {
 	}
 
 	public Object exec(String text) {
+		return returnImageHash(text);
+	}
+	
+	public String returnImageHash(String text) {
 		if(this.mode == EMBEDED_MODE) {
 			try {
 				return returnEmbedding(text);
