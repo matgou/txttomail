@@ -1,6 +1,8 @@
 package info.kapable.utils.txttomail.htmlprocessor.freemarkerExt;
 
 import info.kapable.utils.txttomail.domain.Email;
+import info.kapable.utils.txttomail.EmailSender;
+import info.kapable.utils.txttomail.exception.TemplateProcessingException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,12 +64,19 @@ public class ImageHandle implements TemplateMethodModelEx {
 		return "cid:" + key;
 	}
 	
-	public String returnEmbedding(String fileName)
+	public String returnEmbedding(String fileName) 
 			throws IOException {
 		if(fileName.contains("data:")) {
 			return fileName;
 		}
 		File file = new File(fileName);
+		if (!file.exists()) {
+			try {
+				file = new File(EmailSender.getProperty("template.base.path") + "/" + fileName);
+			} catch (TemplateProcessingException e) {
+				throw new IOException(e.getMessage());
+			}
+		}
 		byte[] bytes = loadFile(file);
 		byte[] encoded = Base64.getEncoder().encode(bytes);
 		String encodedString = new String(encoded);
