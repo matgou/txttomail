@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>info.kapable.utils</groupId>
 	<artifactId>txttomail</artifactId>
-	<version>1.1.2-SNAPSHOT</version>
+	<version>1.1.2</version>
 	<name>TxtToMail</name>
 	<description>Java convert from txt to html email</description>
 
@@ -181,7 +181,7 @@
 		<connection>scm:git:https://github.com/matgou/txttomail.git</connection>
 		<url>scm:git:git@github.com:matgou/txttomail.git</url>
 		<developerConnection>scm:git:git@github.com:matgou/txttomail.git</developerConnection>
-		<tag>txttomail-1.0.2</tag>
+		<tag>txttomail-1.1.2</tag>
 	</scm>
 	<profiles>
 		<profile>
